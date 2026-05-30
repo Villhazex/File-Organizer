@@ -14,6 +14,11 @@ RULES = {
     "uh": r"D:\Kuliah\UHadist",
     "alin": r"D:\Kuliah\ALIN",
     "meme": r"D:\Files\Pictures\meme",
+    "nsfw": r"D:\Files\Documents\nsfw",
+}
+
+EXTENSION_RULES = {
+    ".exe": r"D:\Files\Downloads\exe",
 }
 
 SUPPORTED_EXTENSIONS = {
@@ -26,7 +31,8 @@ SUPPORTED_EXTENSIONS = {
     ".jpg",
     ".jpeg",
     ".webp",
-    ".mp4"
+    ".mp4",
+    ".exe"
 }
 
 # =========================
@@ -98,6 +104,19 @@ def organize_file(filepath):
         return
 
     filename = os.path.basename(filepath)
+
+    if ext in EXTENSION_RULES:
+        destination = EXTENSION_RULES[ext]
+        try:
+            os.makedirs(destination, exist_ok=True)
+            dst = os.path.join(destination, filename)
+            dst = get_unique_destination(dst)
+            shutil.move(filepath, dst)
+            logging.info(f"Moved | {filename} -> {destination}")
+        except Exception:
+            logging.exception(f"Failed moving: {filename}")
+        return
+
     lower_name = filename.lower()
 
     for keyword, destination in RULES.items():
